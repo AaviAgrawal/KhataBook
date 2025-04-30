@@ -1,15 +1,17 @@
 const mongoose = require("mongoose");
 const dbgr = require("debug")("development:mongoose");
+require("dotenv").config();
+
+const uri = process.env.MONGO_DB_URI;
+
+if (!uri) {
+  dbgr("❌ MONGO_DB_URI not found in .env");
+  process.exit(1);
+}
 
 mongoose
-  .connect(process.env.MONGO_DB_URI)
-  .then(function () {
-    dbgr("connected to Mongo");
-  })
-  .catch(function (err) {
-    dbgr(err);
-  });
+  .connect(uri)
+  .then(() => dbgr("✅ Connected to MongoDB"))
+  .catch((err) => dbgr("❌ MongoDB connection error:", err));
 
-let db = mongoose.connection;
-
-module.exports = db;
+module.exports = mongoose.connection;
